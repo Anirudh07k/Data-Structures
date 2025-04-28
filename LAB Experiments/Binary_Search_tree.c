@@ -1,0 +1,167 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define MAX 100
+int tree[MAX];
+int size = 0;
+
+void Initialize()
+{
+    for(int i=0;i<MAX;i++)
+        tree[i] = -1;
+}
+
+void insert(int root, int value)
+{
+    if(root >= MAX)
+    {
+        printf("Tree is Full !!!\n");
+    }
+    if(tree[root] == -1)
+        tree[root] = value;
+    
+    else if(value < tree[root])
+        insert(2 * root + 1, value);
+    
+    else if(value > tree[root])
+        insert(2 * root + 2, value);
+}
+
+void preorder(int root)
+{
+    if(tree[root] == -1)
+    return;
+    printf("%d ",tree[root]);
+    preorder(2 * root + 1);
+    preorder(2 * root + 2);
+}
+
+void inorder(int root)
+{
+    if(tree[root] == -1)
+    return;
+    inorder(2 * root + 1);
+    printf("%d ",tree[root]);
+    inorder(2 * root + 2);
+}
+
+void postorder(int root)
+{
+    if(tree[root] == -1)
+    return;
+    postorder(2 * root + 1);
+    postorder(2 * root + 2);
+    printf("%d ",tree[root]);
+}
+
+int search(int i, int target)
+{
+    i=0;
+    while(i < MAX && tree[i] != -1);
+    {
+        if(tree[i] == target)
+            return i;
+        else if(target < tree[i])
+            i = 2 * i + 1;
+        else
+            i = 2 * i + 2;
+    }
+    return -1;
+}
+
+int findmin(int i)
+{
+    while(i*2+1 < MAX && tree[i*2+1] != -1)
+    {
+        i = 2*i+1;
+    }
+    return i;
+}
+
+void delete(int i, int value)
+{
+    i = search(i, value);
+    if(i == -1)
+        printf("Element Not Found !!!\n");
+    else
+    {
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+
+        if((left >= MAX || tree[left] == -1) && (right >= MAX || tree[right] == -1))
+            tree[i] = -1;
+        else if(right >= MAX || tree[right] == -1)
+        {
+            tree[i] = tree[left];
+            delete(2*i+1,tree[left]);
+        }
+        else if(left >= MAX || tree[left] == -1)
+        {
+            tree[i] = tree[right];
+            delete(2*i+2,tree[right]);
+        }
+        else
+        {
+            int min = findmin(right);
+            tree[i] = tree[min];
+            delete(min,tree[min]);
+        }
+        
+    }
+}
+
+int main()
+{
+    Initialize();
+    while (1)
+    {
+        printf("1. Insert\n");
+        printf("2. Pre-Order\n");
+        printf("3. In-Order\n");
+        printf("4. Post-Order\n");
+        printf("5. Search\n");
+        printf("6. Delete\n");
+        printf("7. Exit\n");
+
+        int choice, value, index, n;
+        printf("Enter Choice : ");
+        scanf("%d", &choice);
+        switch (choice)
+        {
+            case 1:
+            printf("Enter a Element : ");
+            scanf("%d",&n);
+            insert(0,n);
+                break;
+            case 2:
+                preorder(0);
+                break;
+            case 3:
+                inorder(0);
+                break;
+            case 4:
+                postorder(0);
+                break;
+            case 5:
+                printf("Enter the Value : ");
+                scanf("%d",&value);
+                index = search(0, value);
+                if(index != -1)
+                    printf("Element Found !!!\n");
+                else
+                    printf("Element not Found !!!\n");
+                break;
+            case 6:
+                printf("Enter Element to Delete : ");
+                scanf("%d",&value);
+                delete(0, value);
+                break;
+            case 7:
+                exit(0);
+            default:
+            printf("Invalid Choice !!!\n");
+        }
+        printf("\n");
+    }
+    return 0;
+}
+
